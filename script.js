@@ -30,24 +30,32 @@ async function sendMessage(e) {
 
   appendMessage("user", prompt);
   input.value = "";
+
+  // Push to history
   session.history.push({ sender: "user", text: prompt });
   session.messageCount++;
 
   try {
+    const safeSession = {
+      ...session,
+      // Avoid sending functions or anything unserializable
+      history: session.history.map(m => ({ sender: m.sender, text: m.text }))
+    };
+
     const response = await fetch("https://kayen-concierge.nouf.workers.dev/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, session }),
+      body: JSON.stringify({ prompt, session: safeSession }),
     });
 
     const rawText = await response.text();
-    console.log("Raw API Response:", rawText);
+    console.log("Raw response:", rawText);
 
     let data;
     try {
       data = JSON.parse(rawText);
     } catch (err) {
-      console.error("JSON parse error:", err);
+      console.error("❌ JSON parse failed", err);
       appendMessage("bot", "Oops! Invalid response from the server.");
       return;
     }
@@ -59,16 +67,19 @@ async function sendMessage(e) {
       appendMessage("bot", "Oops! No reply from the concierge.");
     }
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("❌ Fetch failed", err);
     appendMessage("bot", "Oops! Something went wrong.");
   }
 }
 
 form.addEventListener("submit", sendMessage);
 
+// Start with the welcome message if it's the user's first message
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
-    const welcome = "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
+    const welcome = `Hey — I'm Kayen, your personal fitness concierge 👋
+I'm here to help you find the right personal trainer based on your goals.
+What’s something you’ve been wanting to work on lately — or a change you’re hoping to make?`;
     appendMessage("bot", welcome);
   }
 });
