@@ -1,4 +1,4 @@
-const apiEndpoint = "https://kayen-concierge.nouf.workers.dev";
+const apiEndpoint = "https://kayen-concierge.nouf.workers.dev/";
 
 let session = {
   consentGiven: false,
@@ -37,11 +37,20 @@ async function sendMessage(prompt) {
     });
 
     const data = await response.json();
+
+    if (!response.ok) {
+      appendMessage("bot", `Error: ${data.reply || 'Something went wrong.'}`);
+      console.error("Backend error:", data);
+      return;
+    }
+
     const botReply = data.reply || "Oops, no response. Try again?";
     appendMessage("bot", botReply);
     session.history.push({ sender: "assistant", text: botReply });
+
   } catch (err) {
-    appendMessage("bot", "Error: " + err.message);
+    appendMessage("bot", "Oops! Something went wrong.");
+    console.error("Frontend error:", err);
   }
 }
 
