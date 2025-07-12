@@ -1,75 +1,55 @@
-// Updated script.js for Kayen Concierge – handles full session and chat logic
+const apiEndpoint = "https://kayen-concierge.nouf.workers.dev/";
 
-const chatBox = document.getElementById('chat-box');
-const chatForm = document.getElementById('chat-form');
-const userInput = document.getElementById('user-input');
+let session = {
+  consentGiven: false,
+  userType: "",
+  primaryGoal: "",
+  additionalInfo: "",
+  email: "",
+  region: "",
+  chatOutcome: "",
+  history: [],
+  messageCount: 0
+};
 
-let messageCount = 0;
-let history = [];
-let consentGiven = false;
-let logged = false;
+const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
+const userInput = document.getElementById("user-input");
 
-// Helper to append a message
 function appendMessage(sender, text) {
-  const message = document.createElement('div');
-  message.className = sender;
-  message.innerText = text;
-  chatBox.appendChild(message);
+  const messageDiv = document.createElement("div");
+  messageDiv.className = sender === "user" ? "message user" : "message bot";
+  messageDiv.innerText = text;
+  chatBox.appendChild(messageDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Sends prompt + session data to Cloudflare
 async function sendMessage(prompt) {
-  const payload = {
-    prompt,
-    session: {
-      messageCount,
-      consentGiven,
-      userType: "",
-      primaryGoal: "",
-      additionalInfo: "",
-      email: "",
-      region: "",
-      chatOutcome: "",
-      logged,
-      history: history.map(h => ({ sender: h.sender, text: h.text }))
-    }
-  };
+  appendMessage("user", prompt);
+  session.history.push({ sender: "user", text: prompt });
+  session.messageCount++;
 
   try {
-    const res = await fetch("https://kayen-concierge.nouf.workers.dev/", {
+    const response = await fetch(apiEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ prompt, session })
     });
 
-    const data = await res.json();
-
-    if (data.reply) {
-      appendMessage("bot", data.reply);
-      history.push({ sender: "assistant", text: data.reply });
-      messageCount++;
-    } else {
-      appendMessage("bot", "Hmm, I didn’t catch that. Want to try again?");
-    }
+    const data = await response.json();
+    const botReply = data.reply || "Oops, no response. Try again?";
+    appendMessage("bot", botReply);
+    session.history.push({ sender: "assistant", text: botReply });
   } catch (err) {
-    appendMessage("bot", "Oops! Something went wrong.");
-    console.error(err);
+    appendMessage("bot", "Error: " + err.message);
   }
 }
 
-chatForm.addEventListener("submit", async e => {
+chatForm.addEventListener("submit", function (e) {
   e.preventDefault();
   const input = userInput.value.trim();
-  if (!input) return;
-
-  appendMessage("user", input);
-  history.push({ sender: "user", text: input });
-  userInput.value = "";
-  await sendMessage(input);
+  if (input) {
+    sendMessage(input);
+    userInput.value = "";
+  }
 });
-
-// Trigger welcome message
-window.onload = () => {
-  sendMessage("[init]");
-};
