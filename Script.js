@@ -48,7 +48,7 @@ async function sendMessage(e) {
       data = JSON.parse(rawText);
     } catch (err) {
       console.error("JSON parse error:", err);
-      appendMessage("bot", "Oops! Invalid response from server.");
+      appendMessage("bot", "Oops! Invalid response from the server.");
       return;
     }
 
@@ -66,7 +66,6 @@ async function sendMessage(e) {
 
 form.addEventListener("submit", sendMessage);
 
-// Auto-inject welcome message on first load
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
     const welcome = "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
