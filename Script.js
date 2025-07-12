@@ -1,4 +1,4 @@
-const apiEndpoint = "https://kayen-concierge.nouf.workers.dev/";
+const apiEndpoint = "https://kayen-concierge.nouf.workers.dev";
 
 let session = {
   consentGiven: false,
