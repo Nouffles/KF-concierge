@@ -65,7 +65,7 @@ async function sendMessage(e) {
       session.history.push({ sender: "assistant", text: data.reply });
     } else {
       appendMessage("bot", "Oops! No reply from the concierge.");
-    }
+    } 
   } catch (err) {
     console.error("❌ Fetch failed", err);
     appendMessage("bot", "Oops! Something went wrong.");
