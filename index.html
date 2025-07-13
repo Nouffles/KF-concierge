@@ -8,8 +8,6 @@
 </head>
 <body>
   <div class="chat-container">
-    
-    <!-- Header with logo and beta label -->
     <div class="header">
       <img
         src="https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w"
@@ -19,20 +17,8 @@
       <h1 class="chat-title">The Kayen Concierge <span class="beta-tag">(beta)</span></h1>
     </div>
 
-    <!-- Chat area -->
-    <div id="chat-box" class="chat-box">
-      <!-- Example static bot message for now -->
-      <div class="bot-message">
-        <img
-          src="https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w"
-          alt="Kayen Bot"
-          class="bot-avatar"
-        />
-        <div class="chat-bubble bot">Hi! I'm your Kayen Concierge. What would you like help with?</div>
-      </div>
-    </div>
+    <div id="chat-box" class="chat-box"></div>
 
-    <!-- Input form -->
     <form id="chat-form">
       <input
         type="text"
@@ -43,7 +29,6 @@
       />
       <button type="submit">Send</button>
     </form>
-
   </div>
 
   <script src="script.js"></script>
