@@ -2,6 +2,7 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 
+// Load or create session
 let session = JSON.parse(localStorage.getItem("kayenSession")) || {
   sessionId: `chat_${Math.floor(Math.random() * 100000)}`,
   userType: "",
@@ -18,12 +19,10 @@ let session = JSON.parse(localStorage.getItem("kayenSession")) || {
   logged: false,
 };
 
-// Save session
 function saveSession() {
   localStorage.setItem("kayenSession", JSON.stringify(session));
 }
 
-// UI helpers
 function appendUserMessage(text) {
   const wrapper = document.createElement("div");
   wrapper.className = "user";
@@ -44,6 +43,7 @@ function appendBotMessageAnimated(text) {
   const avatar = document.createElement("img");
   avatar.className = "avatar";
   avatar.src = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
+  avatar.alt = "Kayen Logo";
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
@@ -78,7 +78,6 @@ function showTypingIndicator() {
   return typing;
 }
 
-// Send message
 async function sendMessage(e) {
   e.preventDefault();
   const prompt = input.value.trim();
@@ -110,13 +109,15 @@ async function sendMessage(e) {
     }
 
     chatBox.removeChild(typingNode);
-    if (data.reply) {
-      appendBotMessageAnimated(data.reply);
-      session = data.session; // update session with latest from backend
-      saveSession();
-    } else {
-      appendBotMessageAnimated("Hmm, no reply received. Try again?");
+
+    // Only show newest assistant reply
+    const newReply = data.reply;
+    if (newReply) {
+      appendBotMessageAnimated(newReply);
     }
+
+    session = data.session;
+    saveSession();
   } catch (err) {
     chatBox.removeChild(typingNode);
     appendBotMessageAnimated("Oops! Something went wrong.");
@@ -126,23 +127,11 @@ async function sendMessage(e) {
 
 form.addEventListener("submit", sendMessage);
 
-// Re-render history if returning
-function renderHistory() {
-  session.history.forEach((m) => {
-    if (m.sender === "user") {
-      appendUserMessage(m.text);
-    } else {
-      appendBotMessageAnimated(m.text);
-    }
-  });
-}
-
 window.addEventListener("DOMContentLoaded", () => {
-  if (!session.history || session.history.length === 0) {
-    const welcome =
-      "Hi👋 I'm Kayen, your personal fitness concierge!\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately?";
-    appendBotMessageAnimated(welcome);
-  } else {
-    renderHistory();
+  // Only show welcome once
+  if (session.messageCount === 0) {
+    appendBotMessageAnimated(
+      "Hi👋 I'm Kayen, your personal fitness concierge!\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately?"
+    );
   }
 });
