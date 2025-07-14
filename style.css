@@ -1,102 +1,62 @@
 body {
   margin: 0;
+  padding: 0;
   font-family: 'Segoe UI', sans-serif;
   background-color: #121212;
   color: #f2f2f2;
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  height: 100vh;
   overflow: hidden;
 }
 
 header {
-  background: #121212;
   padding: 1rem;
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 2;
 }
 
 .beta-tag {
   font-size: 0.8rem;
-  font-weight: normal;
   color: #888;
+  margin-left: 0.4rem;
 }
 
 .chat-container {
-  flex: 1;
-  margin-top: 80px; /* space for header */
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  box-sizing: border-box;
-  height: calc(100vh - 140px);
+  justify-content: space-between;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 700px;
+  height: calc(100vh - 150px);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  overflow: hidden;
 }
 
 .chat-box {
   flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  padding-right: 8px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  scroll-behavior: smooth;
 }
 
-.bot-message {
-  background-color: #2a2a2a;
-  color: #f2f2f2;
-  padding: 0.75rem;
-  border-radius: 1rem;
-  max-width: 75%;
+form {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #121212;
+  border-top: 1px solid #333;
 }
 
-.bot-message img.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.user-message {
-  background-color: #18cef1;
-  color: #000;
-  align-self: flex-end;
-  padding: 0.75rem;
-  border-radius: 1rem;
-  max-width: 75%;
-}
-
-#chat-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-#user-input {
+input[type="text"] {
   flex: 1;
   padding: 0.75rem;
+  font-size: 1rem;
   border-radius: 10px;
   border: none;
-  font-size: 1rem;
-}
-
-button[type="submit"] {
-  background-color: #18cef1;
-  color: #000;
-  border: none;
-  padding: 0 1rem;
-  border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  opacity: 0.9;
-}
+  outline: none;
+  margin-right:
