@@ -1,87 +1,129 @@
- const chatBox = document.getElementById("chat-box");
-    const chatForm = document.getElementById("chat-form");
-    const userInput = document.getElementById("user-input");
+const form = document.getElementById("chat-form");
+const input = document.getElementById("user-input");
+const chatBox = document.getElementById("chat-box");
 
-    const logoUrl = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
+let session = {
+  consentGiven: false,
+  userType: "",
+  primaryGoal: "",
+  additionalInfo: "",
+  email: "",
+  region: "",
+  chatOutcome: "",
+  history: [],
+  messageCount: 0,
+  logged: false,
+};
 
-    const welcomeMessages = [
-      "Hey — I’m Kayen, your personal fitness concierge 👋 What’s something you’ve been wanting to work on lately — or a change you’re hoping to make?",
-      "Hi there! I’m Kayen 👋 I match people with trainers based on their goals. What are you hoping to achieve right now?",
-      "Welcome! I’m Kayen, your fitness concierge. Want to tell me what you’re working toward lately?",
-      "Hello! I’m Kayen — here to guide you to the right trainer. What’s a goal you’ve got in mind right now?"
-    ];
+// Append user message
+function appendUserMessage(text) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "user";
 
-    function addMessage(text, sender = "bot") {
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message", sender);
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerText = text;
 
-      if (sender === "bot") {
-        const avatar = document.createElement("img");
-        avatar.src = logoUrl;
-        avatar.alt = "Kayen logo";
-        messageDiv.appendChild(avatar);
+  wrapper.appendChild(bubble);
+  chatBox.appendChild(wrapper);
+  bubble.scrollIntoView({ behavior: "smooth" });
+}
 
-        const textSpan = document.createElement("span");
-        messageDiv.appendChild(textSpan);
-        chatBox.appendChild(messageDiv);
-        animateTyping(textSpan, text);
-      } else {
-        messageDiv.textContent = text;
-        chatBox.appendChild(messageDiv);
-      }
+// Append animated bot message
+function appendBotMessageAnimated(text) {
+  const bot = document.createElement("div");
+  bot.className = "bot";
 
+  const avatar = document.createElement("img");
+  avatar.className = "avatar";
+  avatar.src = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
+  avatar.alt = "Kayen Logo";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  bot.appendChild(avatar);
+  bot.appendChild(bubble);
+  chatBox.appendChild(bot);
+  bubble.scrollIntoView({ behavior: "smooth" });
+
+  let i = 0;
+  const speed = 20;
+  function typeNext() {
+    if (i < text.length) {
+      bubble.textContent += text.charAt(i);
+      i++;
       chatBox.scrollTop = chatBox.scrollHeight;
+      setTimeout(typeNext, speed);
     }
+  }
+  typeNext();
+}
 
-    function animateTyping(el, text) {
-      let i = 0;
-      const interval = setInterval(() => {
-        el.textContent += text.charAt(i);
-        i++;
-        if (i >= text.length) clearInterval(interval);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }, 20);
-    }
+// Typing indicator
+function showTypingIndicator() {
+  const typing = document.createElement("div");
+  typing.className = "bot";
+  typing.innerHTML = `
+    <img class="avatar" src="https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w" />
+    <div class="bubble typing-indicator">...</div>
+  `;
+  chatBox.appendChild(typing);
+  typing.scrollIntoView({ behavior: "smooth" });
+  return typing;
+}
 
-    function showLoading() {
-      const loading = document.createElement("div");
-      loading.classList.add("message", "bot", "typing");
-      loading.innerHTML = `<img src="${logoUrl}" alt="Kayen logo"><span>...</span>`;
-      chatBox.appendChild(loading);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      return loading;
-    }
+// Send user message and get response
+async function sendMessage(e) {
+  e.preventDefault();
+  const prompt = input.value.trim();
+  if (!prompt) return;
 
-    chatForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const userText = userInput.value.trim();
-      if (!userText) return;
+  appendUserMessage(prompt);
+  input.value = "";
+  session.history.push({ sender: "user", text: prompt });
+  session.messageCount++;
 
-      addMessage(userText, "user");
-      userInput.value = "";
+  const typingNode = showTypingIndicator();
 
-      const loadingEl = showLoading();
-
-      try {
-        const res = await fetch("https://kayen-concierge.nouf.workers.dev", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: userText, session: { messageCount: 1 } })
-        });
-
-        const data = await res.json();
-        loadingEl.remove();
-        addMessage(data.reply);
-      } catch (err) {
-        loadingEl.remove();
-        addMessage("Oops — something went wrong. Try again?");
-      }
+  try {
+    const res = await fetch("https://kayen-concierge.nouf.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, session }),
     });
 
-    window.addEventListener("load", () => {
-      const randomMsg = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
-      addMessage(randomMsg);
-    });
-  </script>
-</body>
-</html>
+    const raw = await res.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      chatBox.removeChild(typingNode);
+      appendBotMessageAnimated("Oops! I didn’t get that. Want to try again?");
+      return;
+    }
+
+    chatBox.removeChild(typingNode);
+    if (data.reply) {
+      appendBotMessageAnimated(data.reply);
+      session.history.push({ sender: "assistant", text: data.reply });
+    } else {
+      appendBotMessageAnimated("Hmm, no reply received. Try again?");
+    }
+  } catch (err) {
+    chatBox.removeChild(typingNode);
+    appendBotMessageAnimated("Oops! Something went wrong.");
+    console.error(err);
+  }
+}
+
+form.addEventListener("submit", sendMessage);
+
+// Initial welcome message
+window.addEventListener("DOMContentLoaded", () => {
+  if (session.messageCount === 0) {
+    const welcome =
+      "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
+    appendBotMessageAnimated(welcome);
+  }
+});
