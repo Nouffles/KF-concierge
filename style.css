@@ -94,9 +94,15 @@ h1 {
   color: #000;
 }
 
-.user .bubble {
-  background-color: #18cef1;
-  color: white;
+  .user .bubble {
+  max-width: 60%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: #18cef1ff;
+  color: #fff;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-size: 16px;
 }
 
 /* AVATAR */
