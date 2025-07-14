@@ -2,6 +2,9 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 
+const KAYEN_LOGO_URL =
+  "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
+
 let session = {
   consentGiven: false,
   userType: "",
@@ -15,59 +18,35 @@ let session = {
   logged: false,
 };
 
-function appendUserMessage(text) {
+function appendMessage(sender, text, isLoading = false) {
   const wrapper = document.createElement("div");
-  wrapper.className = "user";
+  wrapper.className = `chat-message ${sender === "user" ? "user" : "bot"}-message`;
 
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.innerText = text;
-
-  wrapper.appendChild(bubble);
-  chatBox.appendChild(wrapper);
-  bubble.scrollIntoView({ behavior: "smooth" });
-}
-
-function appendBotMessageAnimated(text) {
-  const bot = document.createElement("div");
-  bot.className = "bot";
-
-  const avatar = document.createElement("img");
-  avatar.className = "avatar";
-  avatar.src = "logo.png";
-  avatar.alt = "Kayen Logo";
-
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-
-  bot.appendChild(avatar);
-  bot.appendChild(bubble);
-  chatBox.appendChild(bot);
-  bubble.scrollIntoView({ behavior: "smooth" });
-
-  let i = 0;
-  const speed = 20;
-  function typeNext() {
-    if (i < text.length) {
-      bubble.textContent += text.charAt(i);
-      i++;
-      chatBox.scrollTop = chatBox.scrollHeight;
-      setTimeout(typeNext, speed);
-    }
+  if (sender === "assistant") {
+    const avatar = document.createElement("img");
+    avatar.src = KAYEN_LOGO_URL;
+    avatar.alt = "Kayen Logo";
+    wrapper.appendChild(avatar);
   }
-  typeNext();
+
+  const message = document.createElement("div");
+  message.className = sender === "user" ? "user-message" : "bot-message";
+  if (isLoading) {
+    message.textContent = "...";
+  } else {
+    typeText(message, text);
+  }
+
+  wrapper.appendChild(message);
+  chatBox.appendChild(wrapper);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function showTypingIndicator() {
-  const typing = document.createElement("div");
-  typing.className = "bot";
-  typing.innerHTML = `
-    <img class="avatar" src="logo.png" />
-    <div class="bubble typing-indicator">...</div>
-  `;
-  chatBox.appendChild(typing);
-  typing.scrollIntoView({ behavior: "smooth" });
-  return typing;
+function typeText(element, text, index = 0) {
+  if (index < text.length) {
+    element.textContent += text.charAt(index);
+    setTimeout(() => typeText(element, text, index + 1), 15);
+  }
 }
 
 async function sendMessage(e) {
@@ -75,50 +54,70 @@ async function sendMessage(e) {
   const prompt = input.value.trim();
   if (!prompt) return;
 
-  appendUserMessage(prompt);
+  appendMessage("user", prompt);
   input.value = "";
   session.history.push({ sender: "user", text: prompt });
   session.messageCount++;
 
-  const typingNode = showTypingIndicator();
+  const loadingBubble = appendLoading();
 
   try {
-    const res = await fetch("https://kayen-concierge.nouf.workers.dev/", {
+    const response = await fetch("https://kayen-concierge.nouf.workers.dev/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt, session }),
     });
 
-    const raw = await res.text();
+    const rawText = await response.text();
+    console.log("Raw API Response:", rawText);
+
+    chatBox.removeChild(loadingBubble);
+
     let data;
     try {
-      data = JSON.parse(raw);
-    } catch {
-      chatBox.removeChild(typingNode);
-      appendBotMessageAnimated("Oops! I didn’t get that. Want to try again?");
+      data = JSON.parse(rawText);
+    } catch (err) {
+      console.error("JSON parse error:", err);
+      appendMessage("assistant", "Oops! Invalid response from the server.");
       return;
     }
 
-    chatBox.removeChild(typingNode);
     if (data.reply) {
-      appendBotMessageAnimated(data.reply);
+      appendMessage("assistant", data.reply);
       session.history.push({ sender: "assistant", text: data.reply });
     } else {
-      appendBotMessageAnimated("Hmm, no reply received. Try again?");
+      appendMessage("assistant", "Oops! No reply from the concierge.");
     }
   } catch (err) {
-    chatBox.removeChild(typingNode);
-    appendBotMessageAnimated("Oops! Something went wrong.");
-    console.error(err);
+    console.error("Fetch error:", err);
+    chatBox.removeChild(loadingBubble);
+    appendMessage("assistant", "Oops! Something went wrong.");
   }
+}
+
+function appendLoading() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "chat-message bot-message";
+  const avatar = document.createElement("img");
+  avatar.src = KAYEN_LOGO_URL;
+  avatar.alt = "Kayen Logo";
+
+  const dots = document.createElement("div");
+  dots.className = "bot-message";
+  dots.textContent = "...";
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(dots);
+  chatBox.appendChild(wrapper);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return wrapper;
 }
 
 form.addEventListener("submit", sendMessage);
 
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
-    const welcome =
-      "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
-    appendBotMessageAnimated(welcome);
+    const welcome = "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
+    appendMessage("assistant", welcome);
   }
 });
