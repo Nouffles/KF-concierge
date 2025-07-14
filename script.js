@@ -1,6 +1,6 @@
 const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
-const chatBox = document.getElementById("chat-box"); 
+const chatBox = document.getElementById("chat-box");
 
 // Load session from localStorage or create new one
 let session = JSON.parse(localStorage.getItem("kayenSession")) || {
@@ -128,11 +128,24 @@ async function sendMessage(e) {
 
 form.addEventListener("submit", sendMessage);
 
-// Initial welcome message (only once)
+// Re-render previous chat
+function renderHistory() {
+  session.history.forEach((m) => {
+    if (m.sender === "user") {
+      appendUserMessage(m.text);
+    } else {
+      appendBotMessageAnimated(m.text);
+    }
+  });
+}
+
+// Initial welcome or history
 window.addEventListener("DOMContentLoaded", () => {
-  if (session.messageCount === 0) {
+  if (!session.history || session.history.length === 0) {
     const welcome =
-      "Hi👋 I'm Kayen, your personal fitness concierge! \nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately?";
+      "Hi👋 I'm Kayen, your personal fitness concierge!\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately?";
     appendBotMessageAnimated(welcome);
+  } else {
+    renderHistory();
   }
 });
