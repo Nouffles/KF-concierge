@@ -1,6 +1,6 @@
 const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
-const chatBox = document.getElementById("chat-box");
+const chatBox = document.getElementById("chat-box"); 
 
 // Load session from localStorage or create new one
 let session = JSON.parse(localStorage.getItem("kayenSession")) || {
