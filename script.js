@@ -119,3 +119,28 @@ window.addEventListener("DOMContentLoaded", () => {
     appendBotMessageAnimated(welcome);
   }
 });
+function addMessage(text, sender = "bot") {
+  const messageEl = document.createElement("div");
+  messageEl.className = `message ${sender}`;
+
+  const avatar = document.createElement("img");
+  avatar.className = "avatar";
+  if (sender === "bot") {
+    avatar.src = "349721ba-08fa-4b01-b3b3-450101e33a50.png";
+    avatar.alt = "Kayen logo";
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerText = text;
+
+  if (sender === "bot") {
+    messageEl.appendChild(avatar);
+    messageEl.appendChild(bubble);
+  } else {
+    messageEl.appendChild(bubble);
+  }
+
+  document.getElementById("chat-box").appendChild(messageEl);
+  messageEl.scrollIntoView({ behavior: "smooth" });
+}
