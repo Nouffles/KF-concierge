@@ -1,4 +1,4 @@
-/* GENERAL RESET & BASE */
+/* GENERAL RESET */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,7 +7,7 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: #0f0f0f url('background.png') center/cover no-repeat;
+  background: #0f0f0f url('https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/ae76fd91-cdd8-452f-ba2d-3fcea76486da/App+background.png?format=750w') center/cover no-repeat;
   color: white;
   display: flex;
   flex-direction: column;
