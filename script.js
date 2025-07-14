@@ -127,3 +127,4 @@ window.addEventListener("DOMContentLoaded", () => {
     appendBotMessageAnimated(welcome);
   }
 });
+ 
