@@ -132,7 +132,7 @@ form.addEventListener("submit", sendMessage);
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
     const welcome =
-      "Hey — I'm Kayen, your personal fitness concierge 👋\nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately — or a change you’re hoping to make?";
+      "Hi👋 I'm Kayen, your personal fitness concierge! \nI'm here to help you find the right personal trainer based on your goals.\nWhat’s something you’ve been wanting to work on lately?";
     appendBotMessageAnimated(welcome);
   }
 });
