@@ -95,7 +95,7 @@ h1 {
 }
 
   .user .bubble {
-  max-width: 60%;
+  max-width: 100%;
   padding: 10px 14px;
   border-radius: 18px;
   background: #18cef1ff;
