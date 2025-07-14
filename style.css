@@ -59,4 +59,57 @@ input[type="text"] {
   border-radius: 10px;
   border: none;
   outline: none;
-  margin-right:
+  margin-right: 1rem;
+}
+
+button {
+  padding: 0 1.5rem;
+  font-size: 1rem;
+  background-color: #18cef1;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #18cef1;
+  color: #000;
+  padding: 0.75rem 1rem;
+  border-radius: 20px 20px 0 20px;
+  max-width: 75%;
+  word-wrap: break-word;
+}
+
+.bot-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  align-self: flex-start;
+  max-width: 85%;
+}
+
+.bot-message .message-text {
+  background-color: #444;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 20px 20px 20px 0;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 4px;
+}
+
+#typing-indicator {
+  padding-left: 1rem;
+  font-style: italic;
+  color: #888;
+  display: none;
+}
