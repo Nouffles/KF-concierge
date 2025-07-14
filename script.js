@@ -2,7 +2,9 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 
-let session = {
+// Load session from localStorage or create new one
+let session = JSON.parse(localStorage.getItem("kayenSession")) || {
+  sessionId: `chat_${Math.floor(Math.random() * 100000)}`,
   consentGiven: false,
   userType: "",
   primaryGoal: "",
@@ -14,6 +16,11 @@ let session = {
   messageCount: 0,
   logged: false,
 };
+
+// Save session to localStorage
+function saveSession() {
+  localStorage.setItem("kayenSession", JSON.stringify(session));
+}
 
 // Append user message
 function appendUserMessage(text) {
@@ -83,6 +90,7 @@ async function sendMessage(e) {
   input.value = "";
   session.history.push({ sender: "user", text: prompt });
   session.messageCount++;
+  saveSession();
 
   const typingNode = showTypingIndicator();
 
@@ -107,6 +115,7 @@ async function sendMessage(e) {
     if (data.reply) {
       appendBotMessageAnimated(data.reply);
       session.history.push({ sender: "assistant", text: data.reply });
+      saveSession();
     } else {
       appendBotMessageAnimated("Hmm, no reply received. Try again?");
     }
@@ -119,7 +128,7 @@ async function sendMessage(e) {
 
 form.addEventListener("submit", sendMessage);
 
-// Initial welcome message
+// Initial welcome message (only once)
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
     const welcome =
@@ -127,4 +136,3 @@ window.addEventListener("DOMContentLoaded", () => {
     appendBotMessageAnimated(welcome);
   }
 });
- 
