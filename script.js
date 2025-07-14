@@ -1,93 +1,90 @@
-const form = document.getElementById("chat-form");
-const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
+const userInput = document.getElementById("user-input");
 
-let session = {
-  consentGiven: false,
-  userType: "",
-  primaryGoal: "",
-  additionalInfo: "",
-  email: "",
-  region: "",
-  chatOutcome: "",
-  history: [],
-  messageCount: 0,
-  logged: false,
-};
+const logoUrl = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
 
-function appendMessage(sender, text) {
-  const bubble = document.createElement("div");
-  bubble.classList.add("chat-message");
+// Random welcome messages
+const welcomeMessages = [
+  "Hey — I’m Kayen, your personal fitness concierge 👋 What’s something you’ve been wanting to work on lately — or a change you’re hoping to make?",
+  "Hi there! I’m Kayen 👋 I match people with trainers based on their goals. What are you hoping to achieve right now?",
+  "Welcome! I’m Kayen, your fitness concierge. Want to tell me what you’re working toward lately?",
+  "Hello! I’m Kayen — here to guide you to the right trainer. What’s a goal you’ve got in mind right now?"
+];
 
-  const message = document.createElement("div");
-  message.className = sender === "user" ? "user-message" : "bot-message";
-  message.textContent = "";
+// Utility: add message to DOM
+function addMessage(text, sender = "bot") {
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message", sender);
 
   if (sender === "bot") {
     const avatar = document.createElement("img");
-    avatar.src = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
-    avatar.alt = "Kayen Logo";
-    message.appendChild(avatar);
+    avatar.src = logoUrl;
+    avatar.alt = "Kayen logo";
+    messageDiv.appendChild(avatar);
+
+    const textSpan = document.createElement("span");
+    messageDiv.appendChild(textSpan);
+    chatBox.appendChild(messageDiv);
+    animateTyping(textSpan, text);
+  } else {
+    messageDiv.textContent = text;
+    chatBox.appendChild(messageDiv);
   }
 
-  bubble.appendChild(message);
-  chatBox.appendChild(bubble);
   chatBox.scrollTop = chatBox.scrollHeight;
-
-  // Typing animation
-  const dots = document.createElement("span");
-  dots.className = "typing-dots";
-  dots.textContent = "...";
-  if (sender === "bot") message.appendChild(dots);
-
-  setTimeout(() => {
-    if (sender === "bot") {
-      message.removeChild(dots);
-    }
-    message.textContent = text;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }, 700);
 }
 
-async function sendMessage(e) {
-  e.preventDefault();
-  const prompt = input.value.trim();
-  if (!prompt) return;
+// Utility: animate bot typing
+function animateTyping(el, text) {
+  let i = 0;
+  const interval = setInterval(() => {
+    el.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }, 20);
+}
 
-  appendMessage("user", prompt);
-  input.value = "";
-  session.history.push({ sender: "user", text: prompt });
-  session.messageCount++;
+// Add loading dots while waiting
+function showLoading() {
+  const loading = document.createElement("div");
+  loading.classList.add("message", "bot", "typing");
+  loading.innerHTML = `<img src="${logoUrl}" alt="Kayen logo"><span>...</span>`;
+  chatBox.appendChild(loading);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return loading;
+}
+
+// Send user message and fetch reply
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userText = userInput.value.trim();
+  if (!userText) return;
+
+  addMessage(userText, "user");
+  userInput.value = "";
+
+  const loadingEl = showLoading();
 
   try {
-    const response = await fetch("https://kayen-concierge.nouf.workers.dev/", {
+    const res = await fetch("https://kayen-concierge.nouf.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, session }),
+      body: JSON.stringify({ prompt: userText, session: { messageCount: 1 } })
     });
 
-    const rawText = await response.text();
-    console.log("Raw API Response:", rawText);
-
-    let data;
-    try {
-      data = JSON.parse(rawText);
-    } catch (err) {
-      console.error("JSON parse error:", err);
-      appendMessage("bot", "Oops! Invalid response from the server.");
-      return;
-    }
-
-    if (data.reply) {
-      appendMessage("bot", data.reply);
-      session.history.push({ sender: "assistant", text: data.reply });
-    } else {
-      appendMessage("bot", "Oops! No reply from the concierge.");
-    }
+    const data = await res.json();
+    loadingEl.remove();
+    addMessage(data.reply);
   } catch (err) {
-    console.error("Fetch error:", err);
-    appendMessage("bot", "Oops! Something went wrong.");
+    loadingEl.remove();
+    addMessage("Oops — something went wrong. Try again?");
   }
-}
+});
 
-form.addEventListener("submit", sendMessage);
+// Trigger random welcome message on load
+window.addEventListener("load", () => {
+  const randomMsg = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+  addMessage(randomMsg);
+});
