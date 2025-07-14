@@ -1,43 +1,15 @@
-/* Reset and base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body, html {
   height: 100%;
+  margin: 0;
+  padding: 0;
   font-family: 'Segoe UI', sans-serif;
   background: #121212;
   color: #f2f2f2;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent page scrolling */
+  overflow: hidden; /* lock page scroll */
 }
 
-/* Header styles */
-header {
-  text-align: center;
-  padding: 10px 0;
-}
-
-.logo-top {
-  height: 40px;
-  margin-bottom: 5px;
-}
-
-h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.beta-tag {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: #888;
-}
-
-/* Chat container styles */
 .chat-container {
   flex: 1;
   display: flex;
@@ -46,57 +18,17 @@ h1 {
   margin: 0 auto;
   padding: 10px;
   width: 100%;
+  height: 100%;
 }
 
-/* Scrollable chat box */
 .chat-box {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* this enables vertical scrolling */
   padding: 10px;
+  background: #1e1e1e;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #1e1e1e;
-  border-radius: 8px;
+  scroll-behavior: smooth;
 }
-
-/* Chat form styles */
-form {
-  display: flex;
-  margin-top: 10px;
-  gap: 10px;
-}
-
-input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-}
-
-button {
-  padding: 10px 20px;
-  border: none;
-  background-color: #18cef1;
-  color: #000;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Ensure responsiveness on mobile */
-@media screen and (max-width: 600px) {
-  .chat-container {
-    padding: 10px;
-  }
-
-  h1 {
-    font-size: 1.25rem;
-  }
-
-  .logo-top {
-    height: 30px;
-  }
-}
- 
