@@ -168,3 +168,131 @@ button {
     font-size: 0.9rem;
   }
 }
+/* Reset + Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: url('c402be82-fd79-4d1a-a6a2-baa25047b533.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+header {
+  text-align: center;
+  margin-top: 10px;
+}
+.logo-top {
+  width: 40px;
+  margin-bottom: 5px;
+}
+h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.beta-tag {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: #aaa;
+}
+
+/* Chat UI */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 85vh;
+  width: 95%;
+  max-width: 700px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Chat bubbles */
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 90%;
+}
+
+.bot .bubble,
+.user .bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.bot {
+  align-self: flex-start;
+}
+
+.bot .bubble {
+  background-color: #333;
+  color: #fff;
+  border-top-left-radius: 0;
+}
+
+.user {
+  align-self: flex-end;
+}
+
+.user .bubble {
+  background-color: #18cef1;
+  color: #000;
+  border-top-right-radius: 0;
+}
+
+/* Avatar */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fff;
+  object-fit: cover;
+}
+
+/* Input area */
+#chat-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#user-input {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #18cef1;
+  color: #000;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
