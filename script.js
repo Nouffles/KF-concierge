@@ -16,53 +16,57 @@ let session = {
 };
 
 function appendUserMessage(text) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "user";
+
   const bubble = document.createElement("div");
-  bubble.className = "user message";
+  bubble.className = "bubble";
   bubble.innerText = text;
-  chatBox.appendChild(bubble);
-  chatBox.scrollTop = chatBox.scrollHeight;
+
+  wrapper.appendChild(bubble);
+  chatBox.appendChild(wrapper);
+  bubble.scrollIntoView({ behavior: "smooth" });
 }
 
 function appendBotMessageAnimated(text) {
-  const botMessage = document.createElement("div");
-  botMessage.className = "bot-message";
+  const bot = document.createElement("div");
+  bot.className = "bot";
 
   const avatar = document.createElement("img");
   avatar.className = "avatar";
-  avatar.src =
-    "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
+  avatar.src = "logo.png";
+  avatar.alt = "Kayen Logo";
 
-  const message = document.createElement("div");
-  message.className = "message";
-  botMessage.appendChild(avatar);
-  botMessage.appendChild(message);
-  chatBox.appendChild(botMessage);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
 
-  let index = 0;
+  bot.appendChild(avatar);
+  bot.appendChild(bubble);
+  chatBox.appendChild(bot);
+  bubble.scrollIntoView({ behavior: "smooth" });
+
+  let i = 0;
   const speed = 20;
-
-  function typeNextChar() {
-    if (index < text.length) {
-      message.textContent += text.charAt(index);
-      index++;
+  function typeNext() {
+    if (i < text.length) {
+      bubble.textContent += text.charAt(i);
+      i++;
       chatBox.scrollTop = chatBox.scrollHeight;
-      setTimeout(typeNextChar, speed);
+      setTimeout(typeNext, speed);
     }
   }
-
-  typeNextChar();
+  typeNext();
 }
 
 function showTypingIndicator() {
   const typing = document.createElement("div");
-  typing.className = "bot-message typing";
+  typing.className = "bot";
   typing.innerHTML = `
-    <img class="avatar" src="https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w" />
-    <div class="message typing-indicator">...</div>
+    <img class="avatar" src="logo.png" />
+    <div class="bubble typing-indicator">...</div>
   `;
   chatBox.appendChild(typing);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  typing.scrollIntoView({ behavior: "smooth" });
   return typing;
 }
 
@@ -111,7 +115,6 @@ async function sendMessage(e) {
 
 form.addEventListener("submit", sendMessage);
 
-// Optional: Initial message if needed
 window.addEventListener("DOMContentLoaded", () => {
   if (session.messageCount === 0) {
     const welcome =
@@ -119,28 +122,3 @@ window.addEventListener("DOMContentLoaded", () => {
     appendBotMessageAnimated(welcome);
   }
 });
-function addMessage(text, sender = "bot") {
-  const messageEl = document.createElement("div");
-  messageEl.className = `message ${sender}`;
-
-  const avatar = document.createElement("img");
-  avatar.className = "avatar";
-  if (sender === "bot") {
-    avatar.src = "349721ba-08fa-4b01-b3b3-450101e33a50.png";
-    avatar.alt = "Kayen logo";
-  }
-
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.innerText = text;
-
-  if (sender === "bot") {
-    messageEl.appendChild(avatar);
-    messageEl.appendChild(bubble);
-  } else {
-    messageEl.appendChild(bubble);
-  }
-
-  document.getElementById("chat-box").appendChild(messageEl);
-  messageEl.scrollIntoView({ behavior: "smooth" });
-}
