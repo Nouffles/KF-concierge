@@ -6,7 +6,7 @@ const WORKER_LEAD = `${WORKER_BASE}/lead`;
 const WORKER_CHAT = `${WORKER_BASE}/chat`;
 const KAYEN_AVATAR = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
 
-// ===================================
+// =================================== 
 // ELEMENTS
 // ===================================
 const leadContainer = document.getElementById("lead-container");
