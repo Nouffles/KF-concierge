@@ -13,7 +13,7 @@
       alt="Kayen Logo" 
       class="logo-top"
     />
-    <h1>KAYEN CONCIERGE <span class="beta-tag">(beta)</span></h1>
+    <h1>KAYEN AI CONCIERGE <span class="beta-tag">(beta)</span></h1>
   </header>
 
   <!-- Lead capture (email + consent) -->
