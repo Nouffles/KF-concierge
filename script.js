@@ -1,7 +1,7 @@
-// ===================================
+// =================================== 
 // CONFIG
 // ===================================
-const WORKER_BASE = "https://kayen-concierge.nouf.workers.dev/"; // <-- set your Worker URL
+const WORKER_BASE = "https://kayen-concierge.nouf.workers.dev"; // no trailing slash is slightly cleaner
 const WORKER_LEAD = `${WORKER_BASE}/lead`;
 const WORKER_CHAT = `${WORKER_BASE}/chat`;
 const KAYEN_AVATAR = "https://images.squarespace-cdn.com/content/v1/684758debc5a091431c9977a/c0085606-09b9-4b02-9940-94c6800fd72b/Logo+-+Color+-+White+Text.png?format=1000w";
@@ -97,8 +97,8 @@ leadForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: leadEmail.value.trim(),
-        consent: !!leadConsent.checked
-      })
+        consent: !!leadConsent.checked,
+      }),
     });
 
     const data = await res.json();
@@ -135,7 +135,6 @@ leadForm.addEventListener("submit", async (e) => {
       );
       userInput.focus();
     }, 250);
-
   } catch (err) {
     leadMsg.textContent = "Network error — please try again.";
   } finally {
@@ -165,7 +164,7 @@ async function sendMessage(e) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         prompt,
-        session: { sessionId: sid } // server keeps authoritative state
+        session: { sessionId: sid }, // server keeps authoritative state
       }),
     });
 
